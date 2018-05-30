@@ -72,8 +72,13 @@ class Game:
                 writeln("%s." % self.obj.objs[obj].about)
             elif obj in self.inv.objs:
                 writeln("%s." % self.inv.objs[obj].about)
-            elif obj in self.obj.exits:
+            elif obj in (o.name for o in self.obj.exits.values()):
                 writeln("You can't see the %s from here." % obj)
+            elif obj in self.obj.exits:
+                writeln("There is %s to the %s." % (a(self.obj.exits[obj].name),
+                    obj))
+            elif obj in ["east", "north", "west", "south"]:
+                writeln("There isn't anything particular to the %s." % obj)
             else:
                 writeln("There is no %s here." % obj)
         elif verb in ["i", "inventory"]:
@@ -82,6 +87,7 @@ class Game:
             if obj in self.obj.exits:
                 self.obj = self.obj.exits[obj]
                 self.look()
+                return
             elif obj in (o.name for o in self.obj.exits.values()):
                 for o in self.obj.exits.values():
                     if o.name == obj:
@@ -116,7 +122,11 @@ class Game:
             if obj in self.inv.objs:
                 target = self.inv.objs[obj]
                 if verb in target.actions:
-                    writeln(" ".join(target.actions[verb]))
+                    actions = target.actions[verb]
+                    if isinstance(actions, list):
+                        writeln(" ".join(actions))
+                    else:
+                        writeln(actions)
                     return
             if obj in self.obj.objs:
                 target = self.objs[obj]

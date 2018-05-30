@@ -17,7 +17,8 @@
     "name": "beach",
     "about": "You are on a beautiful, white beach",
     "exits": {
-      "west": "garden"
+      "west": "garden",
+      "north": "cave"
     }
   },
 
@@ -35,7 +36,20 @@
         "Your mind starts drifting.",
         "You see a vision of a great battle involving 100 foot robots.",
         "The vision ends."
-      ]
+      ],
+      "use": "I know this is stupid, but you actually have to type \"read manual\" to read it."
+    }
+  },
+
+  {
+    "name": "cave",
+    "about": "You are in The Cave of Darkness. It's very dark in here! You hear a sound.",
+    "actions": {
+      "listen": "You hear a series of musical beeps, as if being played by an old IBM computer."
+    },
+    "exits": {
+      "south": "beach"
     }
   }
+
 ]
