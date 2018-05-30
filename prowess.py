@@ -91,7 +91,7 @@ class Game:
             writeln("You can't go there.")
         elif verb in ["q", "quit"]:
             raise StopIteration
-        else:
+        elif verb:
             # Perform action on an object
             if obj in self.inv.objs:
                 target = self.inv.objs[obj]
