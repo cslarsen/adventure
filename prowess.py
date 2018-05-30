@@ -69,7 +69,7 @@ class Game:
             if not obj:
                 self.look()
             elif obj in self.obj.objs:
-                writeln(self.obj.objs[obj].about)
+                writeln("%s." % self.obj.objs[obj].about)
             elif obj in self.inv.objs:
                 writeln("%s." % self.inv.objs[obj].about)
             elif obj in self.obj.exits:
@@ -91,6 +91,26 @@ class Game:
             writeln("You can't go there.")
         elif verb in ["q", "quit"]:
             raise StopIteration
+        elif verb in ["t", "take", "get"]:
+            if obj in self.obj.objs:
+                target = self.obj.objs.pop(obj)
+                self.inv.objs[obj] = target
+                writeln("You put the %s in your pocket." % obj)
+            else:
+                if obj in (o.name for o in self.obj.exits.values()):
+                    writeln("You cannot actually take the %s." % obj)
+                elif obj in self.obj.exits:
+                    writeln("Right, you can't pocket an abstract term like %r."
+                            % obj)
+                else:
+                    writeln("I see no %s here." % obj)
+        elif verb in ["d", "drop"]:
+            if obj in self.inv.objs:
+                target = self.inv.objs.pop(obj)
+                self.obj.objs[obj] = target
+                writeln("You drop the %s." % obj)
+            else:
+                writeln("You don't have %s." % a(obj))
         elif verb:
             # Perform action on an object
             if obj in self.inv.objs:
