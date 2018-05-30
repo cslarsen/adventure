@@ -11,7 +11,8 @@ def w(*msg):
     sys.stdout.flush()
 
 def ln(*msg):
-    w("".join(msg) + "\n")
+    if msg:
+        w("".join(msg) + "\n")
 
 def a(s):
     art = "an" if s in "aeiou" else "a"
@@ -23,7 +24,7 @@ def the(s):
 def many(objs, art=a, sep="and"):
     objs = list(objs)
     if len(objs) > 1:
-        return "%s %s %s" % (", ".join(map(a, objs[:-1])), sep, art(objs[-1]))
+        return "%s %s %s" % (", ".join(map(art, objs[:-1])), sep, art(objs[-1]))
     if len(objs) == 1:
         return art(objs[0])
     return ""
@@ -65,16 +66,13 @@ class Game:
     def look(self, obj=None):
         if not obj:
             w("%s." % self.obj.about)
-
             if self.objs:
-                w(" You see %s." % many(self.objs.keys()))
-
+                w(" You see %s here." % many(self.objs.keys()))
             if self.exits:
                 def to(wo):
                     way, obj = wo
                     return "%s to the %s" % (obj.name, way)
                 w(" There is %s." % many(map(to, self.exits.items())))
-
             ln("")
         elif obj in self.objs:
             ln("%s." % self.objs[obj].about)
@@ -87,6 +85,8 @@ class Game:
                 obj))
         elif obj in ["east", "north", "west", "south"]:
             ln("There isn't anything particular to the %s." % obj)
+        elif obj in ("around"):
+            ln("So, you look. Around. In the %s." % self.obj.name)
         else:
             ln("There is no %s here." % obj)
 
@@ -134,27 +134,15 @@ class Game:
             ln("You don't have %s." % a(obj))
 
     def action(self, verb, obj):
-        # Perform action on an object
-        if obj in self.inv:
-            target = self.inv[obj]
-            if verb in target.actions:
-                return ln(target.actions[verb])
-        if obj in self.objs:
-            target = self.objs[obj]
-            if verb in target.actions:
-                return ln(target.actions[verb])
-        if verb in self.obj.actions:
+        if obj in self.inv: # actions on inventory objects
+            return ln(self.inv[obj].actions.get(verb, ""))
+        if obj in self.objs: # actions on objects
+            return ln(self.objs[obj].actions.get(verb, ""))
+        if verb in self.obj.actions: # actions on current place
             return ln(self.obj.actions[verb])
         # Do any objects have this action?
-        found = []
-        for o in self.inv.values():
-            if verb in o.actions:
-                found.append(o.name)
-                break
-        for o in self.objs.values():
-            if verb in o.actions:
-                found.append(o.name)
-                break
+        found = [o.name for o in self.inv.values() if verb in o.actions]
+        found += [o.name for o in self.objs.values() if verb in o.actions]
         if not found:
             ln("There is nothing to %s around here." % verb)
         else:
