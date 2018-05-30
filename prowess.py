@@ -188,6 +188,7 @@ class Game:
             "inventory": self.inventory,
             "l": self.look,
             "look": self.look,
+            "ls": self.look,
             "q": self.quit,
             "quit": self.quit,
             "t": self.take,
