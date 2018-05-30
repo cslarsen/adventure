@@ -7,7 +7,7 @@
       "east": "beach"
     },
     "actions": {
-      "relax": ["You lie down on the grass. Feels great!"]
+      "relax": "You lie down on the grass. Feels great!"
     }
   },
 
@@ -34,14 +34,10 @@
     "name": "manual",
     "about": "It's a book on AI programming in Python, written by a bot",
     "actions": {
-      "read": [
-        "You start reading the Python manual.",
-        "Your mind starts drifting.",
-        "You see a vision of a great battle involving 100 foot robots.",
-        "The vision ends."
-      ],
+      "read": "As you read the Python manual your mind starts to drift. You see a vision of 100-foot robots fighting, smashing down buildings as they grapple. Your vision fades.",
       "use": "I know this is stupid, but you actually have to type \"read manual\" to read it."
-    }
+    },
+    "aliases": ["book"]
   },
 
   {
@@ -49,7 +45,7 @@
     "about": "You are in The Cave of Darkness. It's very dark in here! You hear a sound.",
     "actions": {
       "listen": "You hear a series of musical beeps, as if being played by an old IBM computer.",
-      "hear": "You hear a series of musical beeps, as if being played by an old IBM computer."
+      "hear": "Right. Try to \"listen\" instead."
     },
     "exits": {
       "south": "beach"
