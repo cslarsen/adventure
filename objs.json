@@ -5,6 +5,9 @@
     "objects": ["tree"],
     "exits": {
       "east": "beach"
+    },
+    "actions": {
+      "relax": ["You lie down on the grass. Feels great!"]
     }
   },
 
@@ -45,7 +48,8 @@
     "name": "cave",
     "about": "You are in The Cave of Darkness. It's very dark in here! You hear a sound.",
     "actions": {
-      "listen": "You hear a series of musical beeps, as if being played by an old IBM computer."
+      "listen": "You hear a series of musical beeps, as if being played by an old IBM computer.",
+      "hear": "You hear a series of musical beeps, as if being played by an old IBM computer."
     },
     "exits": {
       "south": "beach"

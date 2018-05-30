@@ -133,6 +133,13 @@ class Game:
                 if verb in target.actions:
                     writeln(" ".join(target.actions[verb]))
                     return
+            if verb in self.obj.actions:
+                actions = self.obj.actions[verb]
+                if isinstance(actions, list):
+                    writeln(" ".join(actions))
+                else:
+                    writeln(actions)
+                return
             # Do any objects have this action?
             found = []
             for o in self.inv.objs.values():
