@@ -15,15 +15,7 @@
     "name": "tree",
     "about": "a very tall, lovely, Japanese plum blossom tree",
     "actions": {
-      "hug": "You give the tree a long hug.",
-      "climb": [
-        "<:force-go at=tree garden>",
-        "<:force-go at=garden tree>"
-      ]
-    },
-    "objects": ["apple"],
-    "exits": {
-      "down": "garden"
+      "hug": "You give the tree a long hug."
     }
   },
 

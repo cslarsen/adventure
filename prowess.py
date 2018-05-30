@@ -101,19 +101,6 @@ class Game:
         else:
             ln("You are carrying nothing.")
 
-    def force_go(self, obj):
-        if obj in self.objs:
-            self.obj = self.objs[obj]
-            self.look()
-        elif obj in (o.name for o in self.exits.values()):
-            for o in self.exits.values():
-                if o.name == obj:
-                    self.obj = o
-                    self.look()
-                    return
-        elif obj in self.inv:
-            ln("You can't do that while the %s is in your pocket." % obj)
-
     def go(self, obj):
         if obj in self.exits:
             self.obj = self.exits[obj]
@@ -150,7 +137,7 @@ class Game:
             ln("You don't have %s." % a(obj))
 
     def action(self, verb, obj):
-        nope = "You can't (or won't) %s the %s." % (verb, obj)
+        nope = "You either can't or won't  %s the %s." % (verb, obj)
         if obj in self.inv: # actions on inventory objects
             action = self.inv[obj].actions.get(verb, nope)
         elif obj in self.objs: # actions on objects
@@ -162,7 +149,7 @@ class Game:
             found = [o.name for o in self.inv.values() if verb in o.actions]
             found += [o.name for o in self.objs.values() if verb in o.actions]
             if not found:
-                ln("There is nothing to %s around here." % verb)
+                ln("There is nothing you can safely %s around here." % verb)
             else:
                 ln("What do you want to %s? %s?" % (verb,
                     many(found, art=the, sep="or").capitalize()))
@@ -192,7 +179,6 @@ class Game:
 
     def dispatch(self, verb, obj, subj):
         funcs = {
-            ":force-go": self.force_go,
             "d": self.drop,
             "drop": self.drop,
             "g": self.go,
