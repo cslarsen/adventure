@@ -1,2 +1,2 @@
 run:
-	python3 prowess.py
+	@python3 prowess.py

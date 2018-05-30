@@ -11,7 +11,19 @@ def write(*msg):
     sys.stdout.flush()
 
 def writeln(*msg):
-    write(*msg, "\n")
+    write("".join(msg) + "\n")
+
+def a(s):
+    art = "an" if s in "aeiou" else "a"
+    return "%s %s" % (art, s)
+
+def many(objs):
+    objs = list(objs)
+    if len(objs) > 1:
+        return "%s and %s" % (", ".join(map(a, objs[:-1])), a(objs[-1]))
+    if len(objs) == 1:
+        return a(objs[0])
+    return ""
 
 class Game:
     def __init__(self, obj, inv):
@@ -24,13 +36,44 @@ class Game:
     def parse(self, cmd):
         s = cmd.split()
         while len(s) < 3:
-            s += [""]
+            s += [None]
         return s
 
+    def look(self):
+        write("%s." % self.obj.about)
+
+        if self.obj.objs:
+            write(" You see %s." % many(self.obj.objs.keys()))
+
+        if self.obj.exits:
+            def to(wo):
+                way, obj = wo
+                return "%s to the %s" % (obj.name, way)
+            write(" There is %s." % many(map(to, self.obj.exits.items())))
+
+        writeln("")
+
     def run(self):
-        print("You are in %s." % self.obj.about)
+        self.look()
         while True:
-            subj, verb, obj = self.parse(self.ask())
+            self.dispatch(*self.parse(self.ask()))
+
+    def dispatch(self, verb, obj, subj):
+        if verb in ["l", "look", "examine"]:
+            if not obj:
+                self.look()
+            elif obj in self.obj.objs:
+                writeln(self.obj.objs[obj].about)
+            elif obj in self.inv.objs:
+                writeln(self.inv.objs[obj].about)
+            elif obj in self.obj.exits:
+                writeln("You can't see the %s from here." % obj)
+            else:
+                writeln("There is no %s here." % obj)
+        elif verb in ["i", "inventory"]:
+            write("You are carrying %s" % many(selv.inv.objs))
+        elif verb in ["quit", "exit"]:
+            raise StopIteration
 
 class Object:
     def __init__(self, name):
@@ -60,15 +103,22 @@ def load(filename):
         obj.exits = {way: objs[name] for (way, name) in obj.exits.items()}
         obj.objs = {name: objs[name] for name in obj.objs}
 
-    start = items[0]["name"]
-    return objs[start]
+    start = objs[items[0]["name"]]
+    inventory = objs["inventory"]
+    return start, inventory
 
 def run():
     try:
-        game = Game(load("objs.json"))
+        writeln("Welcome to adventure.")
+        writeln("Typical commands are: (l)ook, (g)o, (t)ake, (d)rop and (u)se.")
+        writeln("Type 'quit' to quit.")
+        writeln("")
+        game = Game(*load("objs.json"))
         game.run()
     except EOFError:
-        print("")
+        writeln("")
+    except StopIteration:
+        pass
 
 if __name__ == "__main__":
     run()

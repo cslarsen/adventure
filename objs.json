@@ -1,7 +1,7 @@
 [
   {
     "name": "garden",
-    "about": "a sunny, Japanese garden",
+    "about": "You are standing in a sunny, Japanese garden",
     "objects": ["tree"],
     "exits": {
       "east": "beach"
@@ -10,14 +10,33 @@
 
   {
     "name": "tree",
-    "about": "A tall pine tree"
+    "about": "A lovely, Japanese plum blossom tree"
   },
 
   {
     "name": "beach",
-    "about": "a beautiful white beach",
+    "about": "You are on a beautiful, white beach.",
     "exits": {
       "west": "garden"
+    }
+  },
+
+  {
+    "name": "inventory",
+    "objects": ["manual"]
+  },
+
+  {
+    "name": "manual",
+    "about": "python manual",
+    "description": "It's a book on AI programming in Python, written by a bot.",
+    "actions": {
+      "read": [
+        "You start reading the Python manual.",
+        "Your mind starts drifting.",
+        "You see a vision of a great battle involving 100 foot robots.",
+        "The vision ends."
+      ]
     }
   }
 ]
