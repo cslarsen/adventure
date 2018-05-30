@@ -1,0 +1,23 @@
+[
+  {
+    "name": "garden",
+    "about": "a sunny, Japanese garden",
+    "objects": ["tree"],
+    "exits": {
+      "east": "beach"
+    }
+  },
+
+  {
+    "name": "tree",
+    "about": "A tall pine tree"
+  },
+
+  {
+    "name": "beach",
+    "about": "a beautiful white beach",
+    "exits": {
+      "west": "garden"
+    }
+  }
+]
