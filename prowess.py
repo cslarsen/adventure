@@ -112,7 +112,8 @@ class Game:
                     self.obj = o
                     self.look()
                     return
-        ln("You can't go there.")
+        ln("You can only go %s." % many(self.exits.keys(), art=lambda x: x,
+            sep="or"))
 
     def quit(self, obj):
         raise StopIteration
