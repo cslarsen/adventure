@@ -6,12 +6,12 @@ try:
 except ImportError:
     pass
 
-def write(*msg):
+def w(*msg):
     sys.stdout.write("".join(msg))
     sys.stdout.flush()
 
-def writeln(*msg):
-    write("".join(msg) + "\n")
+def ln(*msg):
+    w("".join(msg) + "\n")
 
 def a(s):
     art = "an" if s in "aeiou" else "a"
@@ -31,7 +31,19 @@ def many(objs, art=a, sep="and"):
 class Game:
     def __init__(self, obj, inv):
         self.obj = obj
-        self.inv = inv
+        self._inv = inv
+
+    @property
+    def inv(self):
+        return self._inv.objs
+
+    @property
+    def objs(self):
+        return self.obj.objs
+
+    @property
+    def exits(self):
+        return self.obj.exits
 
     def ask(self):
         return input("> ").strip()
@@ -52,108 +64,101 @@ class Game:
 
     def look(self, obj=None):
         if not obj:
-            write("%s." % self.obj.about)
+            w("%s." % self.obj.about)
 
-            if self.obj.objs:
-                write(" You see %s." % many(self.obj.objs.keys()))
+            if self.objs:
+                w(" You see %s." % many(self.objs.keys()))
 
-            if self.obj.exits:
+            if self.exits:
                 def to(wo):
                     way, obj = wo
                     return "%s to the %s" % (obj.name, way)
-                write(" There is %s." % many(map(to, self.obj.exits.items())))
+                w(" There is %s." % many(map(to, self.exits.items())))
 
-            writeln("")
-        elif obj in self.obj.objs:
-            writeln("%s." % self.obj.objs[obj].about)
-        elif obj in self.inv.objs:
-            writeln("%s." % self.inv.objs[obj].about)
-        elif obj in (o.name for o in self.obj.exits.values()):
-            writeln("You can't see the %s from here." % obj)
-        elif obj in self.obj.exits:
-            writeln("There is %s to the %s." % (a(self.obj.exits[obj].name),
+            ln("")
+        elif obj in self.objs:
+            ln("%s." % self.objs[obj].about)
+        elif obj in self.inv:
+            ln("%s." % self.inv[obj].about)
+        elif obj in (o.name for o in self.exits.values()):
+            ln("You can't see the %s from here." % obj)
+        elif obj in self.exits:
+            ln("There is %s to the %s." % (a(self.exits[obj].name),
                 obj))
         elif obj in ["east", "north", "west", "south"]:
-            writeln("There isn't anything particular to the %s." % obj)
+            ln("There isn't anything particular to the %s." % obj)
         else:
-            writeln("There is no %s here." % obj)
+            ln("There is no %s here." % obj)
 
     def inventory(self, obj):
         if obj:
             self.look(obj)
-        elif self.inv.objs:
-            writeln("You are carrying %s." % many(self.inv.objs))
+        elif self.inv:
+            ln("You are carrying %s." % many(self.inv))
         else:
-            writeln("You are carrying nothing.")
+            ln("You are carrying nothing.")
 
     def go(self, obj):
-        if obj in self.obj.exits:
-            self.obj = self.obj.exits[obj]
+        if obj in self.exits:
+            self.obj = self.exits[obj]
             self.look()
             return
-        elif obj in (o.name for o in self.obj.exits.values()):
-            for o in self.obj.exits.values():
+        elif obj in (o.name for o in self.exits.values()):
+            for o in self.exits.values():
                 if o.name == obj:
                     self.obj = o
                     self.look()
                     return
-        writeln("You can't go there.")
+        ln("You can't go there.")
 
     def quit(self, obj):
         raise StopIteration
 
     def take(self, obj):
-        if obj in self.obj.objs:
-            target = self.obj.objs.pop(obj)
-            self.inv.objs[obj] = target
-            writeln("You take the %s." % obj)
+        if obj in self.objs:
+            self.inv[obj] = self.objs.pop(obj)
+            ln("You take the %s." % obj)
         else:
-            if obj in (o.name for o in self.obj.exits.values()):
-                writeln("You cannot actually take the %s." % obj)
-            elif obj in self.obj.exits:
-                writeln("Right, you can't pocket an abstract term like %r."
-                        % obj)
+            if obj in (o.name for o in self.exits.values()):
+                ln("You cannot actually take the %s." % obj)
+            elif obj in self.exits:
+                ln("Right, you can't pocket an abstract term like %r." % obj)
             else:
-                writeln("I see no %s here." % obj)
+                ln("I see no %s here." % obj)
 
     def drop(self, obj):
-        if obj in self.inv.objs:
-            target = self.inv.objs.pop(obj)
-            self.obj.objs[obj] = target
-            writeln("You drop the %s." % obj)
+        if obj in self.inv:
+            self.objs[obj] = self.inv.pop(obj)
+            ln("You drop the %s." % obj)
         else:
-            writeln("You don't have %s." % a(obj))
+            ln("You don't have %s." % a(obj))
 
     def action(self, verb, obj):
         # Perform action on an object
-        if obj in self.inv.objs:
-            target = self.inv.objs[obj]
+        if obj in self.inv:
+            target = self.inv[obj]
             if verb in target.actions:
-                writeln(target.actions[verb])
-                return
-        if obj in self.obj.objs:
-            target = self.obj.objs[obj]
+                return ln(target.actions[verb])
+        if obj in self.objs:
+            target = self.objs[obj]
             if verb in target.actions:
-                writeln(target.actions[verb])
-                return
+                return ln(target.actions[verb])
         if verb in self.obj.actions:
-            actions = self.obj.actions[verb]
-            writeln(actions)
-            return
+            return ln(self.obj.actions[verb])
         # Do any objects have this action?
         found = []
-        for o in self.inv.objs.values():
+        for o in self.inv.values():
             if verb in o.actions:
                 found.append(o.name)
                 break
-        for o in self.obj.objs.values():
+        for o in self.objs.values():
             if verb in o.actions:
                 found.append(o.name)
                 break
         if not found:
-            writeln("There is nothing to %s around here." % verb)
+            ln("There is nothing to %s around here." % verb)
         else:
-            writeln("What do you want to %s? %s?" % (verb,
+            ln("What do you want to %s? %s?" % (verb,
                 many(found, art=the, sep="or").capitalize()))
 
     def dispatch(self, verb, obj, subj):
@@ -216,14 +221,14 @@ def load(filename):
 
 def run():
     try:
-        writeln("Welcome to adventure.")
-        writeln("Typical commands are: (l)ook, (g)o, (t)ake, (d)rop and (u)se.")
-        writeln("Type (q)uit to exit.")
-        writeln("")
+        ln("Welcome to adventure.")
+        ln("Typical commands are: (l)ook, (g)o, (t)ake, (d)rop and (u)se.")
+        ln("Type (q)uit to exit.")
+        ln("")
         game = Game(*load("objs.json"))
         game.run()
     except EOFError:
-        writeln("")
+        ln("")
     except StopIteration:
         pass
 
