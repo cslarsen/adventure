@@ -17,12 +17,15 @@ def a(s):
     art = "an" if s in "aeiou" else "a"
     return "%s %s" % (art, s)
 
-def many(objs):
+def the(s):
+    return "the %s" % s
+
+def many(objs, art=a, sep="and"):
     objs = list(objs)
     if len(objs) > 1:
-        return "%s and %s" % (", ".join(map(a, objs[:-1])), a(objs[-1]))
+        return "%s %s %s" % (", ".join(map(a, objs[:-1])), sep, art(objs[-1]))
     if len(objs) == 1:
-        return a(objs[0])
+        return art(objs[0])
     return ""
 
 class Game:
@@ -35,6 +38,9 @@ class Game:
 
     def parse(self, cmd):
         s = cmd.split()
+        for rem in ("the", "to", "a"):
+            if rem in s:
+                s.remove(rem)
         while len(s) < 3:
             s += [None]
         return s
@@ -65,15 +71,54 @@ class Game:
             elif obj in self.obj.objs:
                 writeln(self.obj.objs[obj].about)
             elif obj in self.inv.objs:
-                writeln(self.inv.objs[obj].about)
+                writeln("%s." % self.inv.objs[obj].about)
             elif obj in self.obj.exits:
                 writeln("You can't see the %s from here." % obj)
             else:
                 writeln("There is no %s here." % obj)
         elif verb in ["i", "inventory"]:
-            write("You are carrying %s" % many(selv.inv.objs))
-        elif verb in ["quit", "exit"]:
+            writeln("You are carrying %s." % many(self.inv.objs))
+        elif verb in ["g", "go", "walk"]:
+            if obj in self.obj.exits:
+                self.obj = self.obj.exits[obj]
+                self.look()
+            elif obj in (o.name for o in self.obj.exits.values()):
+                for o in self.obj.exits.values():
+                    if o.name == obj:
+                        self.obj = o
+                        self.look()
+                        return
+            writeln("You can't go there.")
+        elif verb in ["q", "quit"]:
             raise StopIteration
+        else:
+            # Perform action on an object
+            if obj in self.inv.objs:
+                target = self.inv.objs[obj]
+                if verb in target.actions:
+                    writeln(" ".join(target.actions[verb]))
+                    return
+            if obj in self.obj.objs:
+                target = self.objs[obj]
+                if verb in target.actions:
+                    writeln(" ".join(target.actions[verb]))
+                    return
+            # Do any objects have this action?
+            found = []
+            for o in self.inv.objs.values():
+                if verb in o.actions:
+                    found.append(o.name)
+                    break
+            for o in self.obj.objs.values():
+                if verb in o.actions:
+                    found.append(o.name)
+                    break
+            if not found:
+                writeln("There is nothing to %s around here." % verb)
+            else:
+                writeln("What do you want to %s? %s?" % (verb,
+                    many(found, art=the, sep="or").capitalize()))
+
 
 class Object:
     def __init__(self, name):
@@ -96,6 +141,7 @@ def load(filename):
         obj.about = data.get("about", "")
         obj.exits = data.get("exits", {})
         obj.objs = data.get("objects", [])
+        obj.actions = data.get("actions", {})
         objs[obj.name] = obj
 
     # Resolve links
@@ -111,7 +157,7 @@ def run():
     try:
         writeln("Welcome to adventure.")
         writeln("Typical commands are: (l)ook, (g)o, (t)ake, (d)rop and (u)se.")
-        writeln("Type 'quit' to quit.")
+        writeln("Type (q)uit to exit.")
         writeln("")
         game = Game(*load("objs.json"))
         game.run()

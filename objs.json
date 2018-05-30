@@ -15,7 +15,7 @@
 
   {
     "name": "beach",
-    "about": "You are on a beautiful, white beach.",
+    "about": "You are on a beautiful, white beach",
     "exits": {
       "west": "garden"
     }
@@ -28,8 +28,7 @@
 
   {
     "name": "manual",
-    "about": "python manual",
-    "description": "It's a book on AI programming in Python, written by a bot.",
+    "about": "It's a book on AI programming in Python, written by a bot",
     "actions": {
       "read": [
         "You start reading the Python manual.",
