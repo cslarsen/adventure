@@ -13,9 +13,25 @@
 
   {
     "name": "tree",
-    "about": "A lovely, Japanese plum blossom tree",
+    "about": "a very tall, lovely, Japanese plum blossom tree",
     "actions": {
-      "hug": "You give the tree a long hug."
+      "hug": "You give the tree a long hug.",
+      "climb": [
+        "<:force-go at=tree garden>",
+        "<:force-go at=garden tree>"
+      ]
+    },
+    "objects": ["apple"],
+    "exits": {
+      "down": "garden"
+    }
+  },
+
+  {
+    "name": "apple",
+    "about": "It's an apple. It's red.",
+    "actions": {
+      "eat": "You'd rather not. It looks weird."
     }
   },
 
@@ -58,7 +74,7 @@
 
   {
     "name": "clue",
-    "about": "It's a little clue written on a yellow post-it note.",
+    "about": "It's a little clue written on a yellow post-it note",
     "actions": {
       "read": "It says: \"You have a very big pocket.\""
     }

@@ -11,11 +11,11 @@ def w(*msg):
     sys.stdout.flush()
 
 def ln(*msg):
-    if msg:
+    if msg and None not in msg:
         w("".join(msg) + "\n")
 
 def a(s):
-    art = "an" if s in "aeiou" else "a"
+    art = "an" if s[0] in "aeiou" else "a"
     return "%s %s" % (art, s)
 
 def the(s):
@@ -65,7 +65,10 @@ class Game:
 
     def look(self, obj=None):
         if not obj:
-            w("%s." % self.obj.about)
+            if self.obj.about.lower().startswith("you"):
+                w("%s." % self.obj.about)
+            else:
+                w("You are in %s." % self.obj.about)
             if self.objs:
                 w(" You see %s here." % many(self.objs.keys()))
             if self.exits:
@@ -75,9 +78,9 @@ class Game:
                 w(" There is %s." % many(map(to, self.exits.items())))
             ln("")
         elif obj in self.objs:
-            ln("%s." % self.objs[obj].about)
+            ln("%s." % self.objs[obj].about.capitalize())
         elif obj in self.inv:
-            ln("%s." % self.inv[obj].about)
+            ln("%s." % self.inv[obj].about.capitalize())
         elif obj in (o.name for o in self.exits.values()):
             ln("You can't see the %s from here." % obj)
         elif obj in self.exits:
@@ -97,6 +100,19 @@ class Game:
             ln("You are carrying %s." % many(self.inv))
         else:
             ln("You are carrying nothing.")
+
+    def force_go(self, obj):
+        if obj in self.objs:
+            self.obj = self.objs[obj]
+            self.look()
+        elif obj in (o.name for o in self.exits.values()):
+            for o in self.exits.values():
+                if o.name == obj:
+                    self.obj = o
+                    self.look()
+                    return
+        elif obj in self.inv:
+            ln("You can't do that while the %s is in your pocket." % obj)
 
     def go(self, obj):
         if obj in self.exits:
@@ -134,26 +150,53 @@ class Game:
             ln("You don't have %s." % a(obj))
 
     def action(self, verb, obj):
+        nope = "You can't (or won't) %s the %s." % (verb, obj)
         if obj in self.inv: # actions on inventory objects
-            return ln(self.inv[obj].actions.get(verb, ""))
-        if obj in self.objs: # actions on objects
-            return ln(self.objs[obj].actions.get(verb, ""))
-        if verb in self.obj.actions: # actions on current place
-            return ln(self.obj.actions[verb])
-        # Do any objects have this action?
-        found = [o.name for o in self.inv.values() if verb in o.actions]
-        found += [o.name for o in self.objs.values() if verb in o.actions]
-        if not found:
-            ln("There is nothing to %s around here." % verb)
+            action = self.inv[obj].actions.get(verb, nope)
+        elif obj in self.objs: # actions on objects
+            action = self.objs[obj].actions.get(verb, nope)
+        elif verb in self.obj.actions: # actions on current place
+            action = self.obj.actions[verb]
         else:
-            ln("What do you want to %s? %s?" % (verb,
-                many(found, art=the, sep="or").capitalize()))
+            # Enumerate possibilities
+            found = [o.name for o in self.inv.values() if verb in o.actions]
+            found += [o.name for o in self.objs.values() if verb in o.actions]
+            if not found:
+                ln("There is nothing to %s around here." % verb)
+            else:
+                ln("What do you want to %s? %s?" % (verb,
+                    many(found, art=the, sep="or").capitalize()))
+            return
+
+        if action[0] == "<" and action[-1] == ">":
+            self.dispatch(*self.parse(action[1:-1]))
+            return
+        elif isinstance(action, list):
+            found = None
+            for act in action:
+                if act[0] == "<" and act[-1] == ">":
+                    # dirty, rewrite
+                    act = act[1:-1]
+                    verb, when, obj = act.split()
+                    which, value = when.split("=")
+                    if which == "at" and self.obj.name == value:
+                        found = [verb, obj, None]
+                        break
+            if found:
+                self.dispatch(*found)
+            else:
+                ln("That doesn't work.")
+        else:
+            ln(action)
+
 
     def dispatch(self, verb, obj, subj):
         funcs = {
+            ":force-go": self.force_go,
             "d": self.drop,
             "drop": self.drop,
             "g": self.go,
+            "get": self.take,
             "go": self.go,
             "i": self.inventory,
             "inventory": self.inventory,
@@ -168,11 +211,8 @@ class Game:
         if verb in funcs:
             func = funcs[verb]
             func(obj)
-            return
-
-        if verb:
+        elif verb:
             self.action(verb, obj)
-
 
 class Object:
     def __init__(self, name):
