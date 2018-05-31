@@ -110,10 +110,10 @@
 
   {
     "name": "computer",
-    "about": "It's a bona-fide Commodore 64 home computer",
+    "about": "It's a bona-fide c64 home computer",
     "actions": {
       "boot": [
-        "<on inventory.has tree>You start the computer and get back to work.. Congratulations, you have completed the game!<do quit game>",
+        "<on inventory.has tree>You resume the computer using the tree in your pocket.. Congratulations, you have completed the game!<do quit game>",
         "It's stuck while recursing a tree structure. Something is missing."
       ],
       "turn": "<do boot computer>",
