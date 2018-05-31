@@ -3,6 +3,7 @@
     "name": "garden",
     "about": "You are standing in a sunny, Japanese garden",
     "objects": ["tree"],
+    "hidden": ["ground"],
     "exits": {
       "east": "beach",
       "north": "field"
@@ -15,6 +16,11 @@
       "jump": "Your body rises up two inches into the air. You're on the ground again.",
       "wait": "You wait. Nothing happens."
     }
+  },
+
+  {
+    "name": "ground",
+    "about": "There is nothing particular about the ground here"
   },
 
   {

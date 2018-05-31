@@ -59,6 +59,10 @@ class Interpreter:
         return self.obj.objs
 
     @property
+    def hidden(self):
+        return self.obj.hidden
+
+    @property
     def exits(self):
         return self.obj.exits
 
@@ -128,11 +132,13 @@ class Interpreter:
                 w(" There is %s." % many(map(to, self.exits.items())))
             ln("")
         elif obj in self.objs:
-            ln("%s." % self.objs[obj].about.capitalize())
+            ln("%s." % self.objs[obj].about)
+        elif obj in self.hidden:
+            ln("%s." % self.hidden[obj].about)
         elif obj in self.inv:
-            ln("%s." % self.inv[obj].about.capitalize())
+            ln("%s." % self.inv[obj].about)
         elif obj in (o.name for o in self.exits.values()):
-            ln("You can't see the %s from here." % obj)
+            ln("You can't see the %s well from here." % obj)
         elif obj in self.exits:
             ln("There is %s to the %s." % (a(self.exits[obj].name),
                 obj))
@@ -184,6 +190,8 @@ class Interpreter:
                 ln("Right, you can't pocket an abstract term like %r." % obj)
             elif obj in self.inv:
                 ln("You already have the %s." % obj)
+            elif obj in self.hidden:
+                ln("You can't take the %s." % obj)
             elif obj:
                 ln("I see no %s here." % obj)
             else:
@@ -270,6 +278,7 @@ def load(filename):
         obj.exits = data.get("exits", {})
         obj.objs = data.get("objects", [])
         obj.actions = data.get("actions", {})
+        obj.hidden = data.get("hidden", [])
         obj.state = {k: str(v) for (k,v) in data.get("state", {}).items()}
         objs[obj.name] = obj
 
@@ -277,6 +286,7 @@ def load(filename):
     for obj in objs.values():
         obj.exits = {way: objs[name] for (way, name) in obj.exits.items()}
         obj.objs = {name: objs[name] for name in obj.objs}
+        obj.hidden = {name: objs[name] for name in obj.hidden}
 
     start = objs[items[0]["name"]]
     inventory = objs["inventory"]
