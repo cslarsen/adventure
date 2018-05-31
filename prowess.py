@@ -19,9 +19,6 @@ def a(s):
     art = "an" if s[0] in "aeiou" else "a"
     return "%s %s" % (art, s)
 
-def the(s):
-    return "the %s" % s
-
 def many(objs, art=a, sep="and"):
     objs = list(objs)
     if len(objs) > 1:
@@ -30,7 +27,11 @@ def many(objs, art=a, sep="and"):
         return art(objs[0])
     return ""
 
-class Game:
+class Object:
+    def __init__(self, name):
+        self.name = name
+
+class Interpreter:
     def __init__(self, obj, inv, allobjs):
         self.obj = obj
         self.allobjs = allobjs
@@ -51,30 +52,30 @@ class Game:
     def ask(self):
         return input("> ").strip()
 
-    def execute_action(self, obj, actions):
-        def get_commands(action):
+    def execute(self, obj, actions):
+        def extract(action):
             commands = []
             for tag in re.findall("(<[^>]*>)", action):
                 action = action.replace(tag, "")
-                cmd, key, value = tag[1:-1].split()
-                commands.append((cmd, key, value))
+                commands.append(tag[1:-1].split())
             return action, commands
 
         if isinstance(actions, list):
             for action in actions:
-                self.execute_action(obj, action)
+                self.execute(obj, action)
         else:
-            action, commands = get_commands(actions)
+            action, commands = extract(actions)
             for com, key, value in commands:
                 target = obj
                 if "." in key:
                     name, key = key.split(".")
                     target = self.allobjs[name]
 
-                if com == "on" and key == "has" and value not in target.objs:
-                    return # skip action
-                elif com == "on" and key != "has" and target.state.get(key, "") != value:
-                    return # skip action
+                if com == "on":
+                    if key == "has" and value not in target.objs:
+                        return
+                    elif key != "has" and target.state.get(key, "") != value:
+                        return
                 elif com == "set":
                     target.state[key] = value
                 elif com == "do":
@@ -88,9 +89,8 @@ class Game:
     def parse(self, cmd):
         cmd = cmd.replace("<", "").replace(">", "").replace(":", "")
         s = cmd.split()
-        for rem in ("the", "to", "a", "on"):
-            if rem in s:
-                s.remove(rem)
+        for rem in ("the", "to", "a", "on", "down", "under", "over"):
+            if rem in s: s.remove(rem)
         while len(s) < 2:
             s += [None]
         return s
@@ -200,13 +200,13 @@ class Game:
                 ln("There is nothing you can safely %s around here." % verb)
             else:
                 ln("What do you want to %s? %s?" % (verb,
-                    many(found, art=the, sep="or").capitalize()))
+                    many(found, art=lambda x: "the %s" % x, sep="or").capitalize()))
             return
 
         if "<" in action:
-            self.execute_action(target, [action])
+            self.execute(target, [action])
         elif isinstance(action, list):
-            self.execute_action(target, action)
+            self.execute(target, action)
         else:
             ln(action)
 
@@ -235,16 +235,6 @@ class Game:
         elif verb:
             self.action(verb, obj)
 
-class Object:
-    def __init__(self, name):
-        self.name = name
-        self.objs = []
-        self.exits = []
-        self.about = ""
-
-    def __repr__(self):
-        return "<Object: name=%r objs=%d>" % (self.name, len(self.objs))
-
 def load(filename):
     with open(filename) as f:
         items = json.load(f)
@@ -271,10 +261,7 @@ def load(filename):
 
 def run():
     try:
-        ln("Welcome! Commands are: (l)ook, (g)o, (t)ake, (d)rop, (q)uit and more.")
-        ln("")
-        game = Game(*load("objs.json"))
-        game.run()
+        Interpreter(*load("objs.json")).run()
     except EOFError:
         ln("")
     except StopIteration:

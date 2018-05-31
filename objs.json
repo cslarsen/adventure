@@ -25,7 +25,16 @@
       "climb": "You can't climb it.",
       "use": "<do climb tree>",
       "eat": "Really, you think you can eat the tree?",
-      "chop": "Nah, you'd rather leave it as it is. Also, you can't."
+      "chop": "Nah, you'd rather leave it as it is. Also, you can't.",
+      "kick": "You kick the tree. It doesn't care.",
+      "punch": "You punch the tree. It doesn't care.",
+      "topple": "You're not strong enough.",
+      "touch": "<do hug tree>",
+      "examine": "There's nothing special about it. Oh, it's detachable.",
+      "unplug": "<do take tree>",
+      "unscrew": "<do take tree>",
+      "lift": "<do take tree>",
+      "kiss": "Smack! You got bark in your mouth."
     }
   },
 
@@ -35,6 +44,12 @@
     "exits": {
       "west": "garden",
       "north": "cave"
+    },
+    "actions": {
+      "swim": "You'd rather not.",
+      "play": "You play in the sand.",
+      "lay": "You lay down in the hot sand.",
+      "relax": "<do lay here>"
     }
   },
 
@@ -79,7 +94,9 @@
     "name": "clue",
     "about": "It's a little clue written on a yellow post-it note",
     "actions": {
-      "read": "<set tower.readclue 1>It says: \"You have a very big pocket.\""
+      "read": "<set tower.readclue 1>It says: \"You have a very big pocket.\"",
+      "use": "<do read clue>",
+      "open": "<do read clue>"
     }
   },
 
@@ -103,14 +120,29 @@
         "<on readclue 1>You enter the tower...<do :jump office>",
         "<on readclue 0>You don't have a clue on how to enter the tower."
       ],
-      "climb": "There's no way you can climb it."
+      "climb": "There's no way you can climb it.",
+      "use": "<do enter tower>",
+      "open": "<do enter tower>"
     }
   },
 
   {
     "name": "office",
-    "about": "an office with an untidy desk",
-    "objects": ["computer"]
+    "about": "an untidy, but cozy office",
+    "objects": ["computer", "desk"],
+    "actions": {
+      "work": "You start making a clip house, but lose interest after a while."
+    }
+  },
+
+  {
+    "name": "desk",
+    "about": "It's a very messy Cocobola desk",
+    "actions": {
+      "push": "It won't budge.",
+      "use": "Yeah, you really should get back to work.",
+      "read": "There's an inscription. It says \"Stigen was here\"."
+    }
   },
 
   {
@@ -124,7 +156,8 @@
       "turn": "<do boot computer>",
       "reset": "<do boot computer>",
       "play": "<do boot computer>",
-      "use": "<do boot computer>"
+      "use": "<do boot computer>",
+      "kick": "You kick it. The C64 is undamaged."
     }
   }
 
