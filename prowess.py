@@ -42,7 +42,7 @@ class Object:
         self.name = name
 
 def comp(data):
-    return base64.b85encode(zlib.compress(data.encode("utf-8")))
+    return base64.b85encode(zlib.compress(data.encode("utf-8"), 9))
 
 def decomp(data):
     return zlib.decompress(base64.b85decode(data)).decode("utf-8")
