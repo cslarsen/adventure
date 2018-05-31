@@ -62,6 +62,9 @@ class Game:
                     break
                 elif cmd == "set":
                     obj.state[key] = value
+                elif cmd == "do":
+                    self.dispatch(key, value, None)
+                    skip = True
 
             if not skip:
                 ln(action)
