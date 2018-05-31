@@ -31,8 +31,9 @@ def many(objs, art=a, sep="and"):
     return ""
 
 class Game:
-    def __init__(self, obj, inv):
+    def __init__(self, obj, inv, allobjs):
         self.obj = obj
+        self.allobjs = allobjs
         self._inv = inv
 
     @property
@@ -57,11 +58,17 @@ class Game:
                 action = action.replace(tag, "")
                 cmd, key, value = tag[1:-1].split()
 
-                if cmd == "on" and obj.state.get(key, None) != value:
+                if "." in key:
+                    target, key = key.split(".")
+                    target = self.allobjs[target]
+                else:
+                    target = obj
+
+                if cmd == "on" and target.state.get(key, None) != value:
                     skip = True
                     break
                 elif cmd == "set":
-                    obj.state[key] = value
+                    target.state[key] = value
                 elif cmd == "do":
                     self.dispatch(key, value, None)
                     skip = True
@@ -70,9 +77,9 @@ class Game:
                 ln(action)
 
     def parse(self, cmd):
-        cmd = cmd.replace("<", "").replace(">", "")
+        cmd = cmd.replace("<", "").replace(">", "").replace(":", "")
         s = cmd.split()
-        for rem in ("the", "to", "a"):
+        for rem in ("the", "to", "a", "on"):
             if rem in s:
                 s.remove(rem)
         while len(s) < 3:
@@ -121,6 +128,10 @@ class Game:
             ln("You are carrying %s." % many(self.inv))
         else:
             ln("You are carrying nothing.")
+
+    def jump(self, obj):
+        self.obj = self.allobjs[obj]
+        self.look()
 
     def go(self, obj):
         if obj in self.exits:
@@ -192,6 +203,7 @@ class Game:
 
     def dispatch(self, verb, obj, subj):
         funcs = {
+            ":jump": self.jump,
             "d": self.drop,
             "drop": self.drop,
             "g": self.go,
@@ -246,7 +258,7 @@ def load(filename):
 
     start = objs[items[0]["name"]]
     inventory = objs["inventory"]
-    return start, inventory
+    return start, inventory, objs
 
 def run():
     try:

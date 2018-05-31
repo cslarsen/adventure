@@ -74,27 +74,45 @@
     "name": "clue",
     "about": "It's a little clue written on a yellow post-it note",
     "actions": {
-      "read": "<set tower.hasclue 1>It says: \"You have a very big pocket.\""
+      "read": "<set tower.readclue 1>It says: \"You have a very big pocket.\""
     }
   },
 
   {
     "name": "field",
     "about": "an open, grassy field",
-    "objects": ["tower"]
+    "objects": ["tower", "clue"],
+    "exits": {
+      "south": "garden"
+    }
   },
 
   {
     "name": "tower",
     "about": "It's a big, white stone tower",
     "state": {
-      "hasclue": 0
+      "readclue": 0
     },
     "actions": {
       "enter": [
-        "<on hasclue 0>You don't have a clue how to enter the tower.",
-        "<on hasclue 1><do go platform>"
+        "<on readclue 1><do :jump office>",
+        "<on readclue 0>You don't have a clue how to enter the tower."
       ]
+    }
+  },
+
+  {
+    "name": "office",
+    "about": "an office with an untidy desk",
+    "objects": ["computer"]
+  },
+
+  {
+    "name": "computer",
+    "about": "It's a bona-fide Commodore 64 home computer",
+    "actions": {
+      "boot": "It doesn't work.",
+      "turn": "<do boot computer>"
     }
   }
 
