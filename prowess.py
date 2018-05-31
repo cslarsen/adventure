@@ -256,8 +256,11 @@ class Interpreter:
             self.action(verb, obj)
 
 def load(filename):
-    with open(filename) as f:
-        items = json.load(f)
+    if isinstance(filename, bytes):
+        items = json.loads(decomp(filename))
+    else:
+        with open(filename) as f:
+            items = json.load(f)
 
     objs = {}
 
@@ -279,9 +282,9 @@ def load(filename):
     inventory = objs["inventory"]
     return start, inventory, objs
 
-def run():
+def run(name="objs.json"):
     try:
-        Interpreter(*load("objs.json")).run()
+        Interpreter(*load(name)).run()
     except EOFError:
         ln("")
     except StopIteration:
