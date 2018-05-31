@@ -10,6 +10,12 @@ try:
 except ImportError:
     pass
 
+ALIASES = {
+    "describe": "look",
+    "get": "take",
+    "items": "inventory",
+}
+
 def w(*msg):
     sys.stdout.write("".join(msg))
     sys.stdout.flush()
@@ -108,6 +114,8 @@ class Interpreter:
         s = cmd.split()
         for rem in ("the", "at", "to", "a", "on", "down", "under", "over"):
             if rem in s: s.remove(rem)
+        for i in range(len(s)):
+            s[i] = ALIASES.get(s[i], s[i])
         while len(s) < 2:
             s += [None]
         return s
@@ -146,8 +154,12 @@ class Interpreter:
             ln("There isn't anything particular to the %s." % obj)
         elif obj in ("around"):
             ln("So, you look. Around. In the %s." % self.obj.name)
+        elif obj == self.obj.name:
+            self.look()
+        elif obj == "inventory":
+            self.inventory(None)
         else:
-            ln("There is no %s here." % obj)
+            ln("There is nothing particular about the %s." % obj)
 
     def inventory(self, obj):
         if obj:
@@ -243,14 +255,11 @@ class Interpreter:
             "d": self.drop,
             "drop": self.drop,
             "g": self.go,
-            "get": self.take,
             "go": self.go,
             "i": self.inventory,
             "inventory": self.inventory,
-            "items": self.inventory,
             "l": self.look,
             "look": self.look,
-            "ls": self.look,
             "q": self.quit,
             "quit": self.quit,
             "t": self.take,

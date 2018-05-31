@@ -57,7 +57,33 @@
       "play": "You play in the sand.",
       "lay": "You lay down in the hot sand.",
       "relax": "<do lay here>"
-    }
+    },
+    "hidden": ["sand", "waves", "sea", "ship", "horizon"]
+  },
+
+  {
+    "name": "sand",
+    "about": "The sand is pure white and very hot"
+  },
+
+  {
+    "name": "sea",
+    "about": "The sea is calm today. You see a ship on the horizon"
+  },
+
+  {
+    "name": "ship",
+    "about": "It's hard to make out the ship clearly. It seems to be a trawler"
+  },
+
+  {
+    "name": "horizon",
+    "about": "You see a ship on the horizon"
+  },
+
+  {
+    "name": "waves",
+    "about": "The waves as gently rolling onto the beach."
   },
 
   {
