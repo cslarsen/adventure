@@ -9,9 +9,11 @@
     },
     "actions": {
       "relax": "You lay down on the grass. Feels great!",
-      "lay": "<do relax .>",
+      "lay": "<do relax here>",
       "sleep": "You're not sleepy.",
-      "help": "Nobody is around to help you."
+      "help": "Nobody is around to help you.",
+      "jump": "Your body rises up two inches into the air. You're on the ground again.",
+      "wait": "You wait. Nothing happens."
     }
   },
 
@@ -20,7 +22,10 @@
     "about": "It's a lovely and very tall Japanese plum blossom tree",
     "actions": {
       "hug": "You give the tree a long hug.",
-      "climb": "You can't climb it."
+      "climb": "You can't climb it.",
+      "use": "<do climb tree>",
+      "eat": "Really, you think you can eat the tree?",
+      "chop": "Nah, you'd rather leave it as it is. Also, you can't."
     }
   },
 
