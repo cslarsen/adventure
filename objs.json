@@ -163,7 +163,7 @@
     },
     "actions": {
       "enter": [
-        "<on readclue 1>You enter the tower...<do :jump office>",
+        "<on readclue 1>With a clue in mind, you enter the tower.<do :jump office>",
         "<on readclue 0>You don't have a clue on how to enter the tower."
       ],
       "climb": "There's no way you can climb it.",
@@ -178,7 +178,8 @@
     "about": "an untidy, but cozy office",
     "objects": ["computer", "desk"],
     "actions": {
-      "work": "You start making a clip house, but lose interest after a while."
+      "work": "You start making a clip house, but lose interest after a while.",
+      "help": "Maybe you forgot to bring something? You may have to restart."
     }
   },
 
@@ -188,13 +189,14 @@
     "actions": {
       "push": "It won't budge.",
       "use": "Yeah, you really should get back to work.",
-      "read": "There's an inscription. It says \"Stigen was here\"."
+      "read": "There's an inscription. It says \"Stigen was here\".",
+      "examine": "<do read desk>"
     }
   },
 
   {
     "name": "computer",
-    "about": "It's a bona-fide c64 home computer",
+    "about": "It's a bona-fide Commodore 64",
     "actions": {
       "boot": [
         "<on inventory.has tree>You resume the computer using the tree in your pocket.. Congratulations, you have completed the game!<do quit game>",
@@ -204,7 +206,8 @@
       "reset": "<do boot computer>",
       "play": "<do boot computer>",
       "use": "<do boot computer>",
-      "kick": "You kick it. The C64 is undamaged."
+      "kick": "You kick it. The C64 is undamaged.",
+      "restart": "It boots up but gets stuck in the same subroutine. You definitely should have brought something."
     }
   }
 
