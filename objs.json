@@ -34,7 +34,8 @@
       "unplug": "<do take tree>",
       "unscrew": "<do take tree>",
       "lift": "<do take tree>",
-      "kiss": "Smack! You got bark in your mouth."
+      "kiss": "Smack! You got bark in your mouth.",
+      "shake": "You shake the tree, but nothing falls down."
     }
   },
 
