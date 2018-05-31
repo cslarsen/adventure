@@ -146,7 +146,8 @@ class Interpreter:
         elif obj in self.inv:
             ln("%s." % self.inv[obj].about)
         elif obj in (o.name for o in self.exits.values()):
-            ln("You can't see the %s well from here." % obj)
+            way = [k for k in self.exits if self.exits[k].name == obj][0]
+            ln("There is a %s to the %s." % (obj, way))
         elif obj in self.exits:
             ln("There is %s to the %s." % (a(self.exits[obj].name),
                 obj))
