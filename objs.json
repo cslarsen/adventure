@@ -45,9 +45,17 @@
     "name": "manual",
     "about": "It's a book on AI programming in Python, written by a bot",
     "actions": {
-      "read": "As you read the Python manual your mind starts to drift. You see a vision of 100-foot robots fighting, smashing down buildings as they grapple. Your vision fades.",
+      "read": [
+        "<on read 1>You already read it.",
+        "<on read 0><set read 1>As you read the Python manual your mind starts to drift. You see a vision of 100-foot robots fighting, smashing down buildings as they grapple. Your vision fades."
+      ],
       "use": "I know this is stupid, but you actually have to type \"read manual\" to read it.",
-      "hug": "You hug the book."
+      "hug": "You hug the book.",
+      "caress": "You caress the book.",
+      "kiss": "You kiss the book."
+    },
+    "state": {
+      "read": 0
     }
   },
 

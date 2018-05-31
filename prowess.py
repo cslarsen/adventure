@@ -1,4 +1,5 @@
 import json
+import re
 import sys
 
 try:
@@ -49,7 +50,24 @@ class Game:
     def ask(self):
         return input("> ").strip()
 
+    def execute_action(self, obj, actions):
+        for action in actions:
+            skip = False
+            for tag in re.findall("(<[^>]*>)", action):
+                action = action.replace(tag, "")
+                cmd, key, value = tag[1:-1].split()
+
+                if cmd == "on" and obj.state.get(key, None) != value:
+                    skip = True
+                    break
+                elif cmd == "set":
+                    obj.state[key] = value
+
+            if not skip:
+                ln(action)
+
     def parse(self, cmd):
+        cmd = cmd.replace("<", "").replace(">", "")
         s = cmd.split()
         for rem in ("the", "to", "a"):
             if rem in s:
@@ -103,17 +121,15 @@ class Game:
 
     def go(self, obj):
         if obj in self.exits:
-            self.obj = self.exits[obj]
-            self.look()
-            return
+            dest = self.exits[obj]
         elif obj in (o.name for o in self.exits.values()):
-            for o in self.exits.values():
-                if o.name == obj:
-                    self.obj = o
-                    self.look()
-                    return
-        ln("You can only go %s." % many(self.exits.keys(), art=lambda x: x,
-            sep="or"))
+            dest = [o for o in self.exits.values() if o.name == obj][0]
+        else:
+            ln("You can only go %s." % many(self.exits.keys(), art=lambda x: x,
+                sep="or"))
+            return
+        self.obj = dest
+        self.look()
 
     def quit(self, obj):
         raise StopIteration
@@ -127,6 +143,8 @@ class Game:
                 ln("You cannot actually take the %s." % obj)
             elif obj in self.exits:
                 ln("Right, you can't pocket an abstract term like %r." % obj)
+            elif obj in self.inv:
+                ln("You already have the %s." % obj)
             else:
                 ln("I see no %s here." % obj)
 
@@ -140,11 +158,14 @@ class Game:
     def action(self, verb, obj):
         nope = "You either can't or won't  %s the %s." % (verb, obj)
         if obj in self.inv: # actions on inventory objects
-            action = self.inv[obj].actions.get(verb, nope)
+            target = self.inv[obj]
+            action = target.actions.get(verb, nope)
         elif obj in self.objs: # actions on objects
-            action = self.objs[obj].actions.get(verb, nope)
+            target = self.objs[obj]
+            action = target.actions.get(verb, nope)
         elif verb in self.obj.actions: # actions on current place
-            action = self.obj.actions[verb]
+            target = self.obj
+            action = target.actions[verb]
         else:
             # Enumerate possibilities
             found = [o.name for o in self.inv.values() if verb in o.actions]
@@ -156,27 +177,12 @@ class Game:
                     many(found, art=the, sep="or").capitalize()))
             return
 
-        if action[0] == "<" and action[-1] == ">":
-            self.dispatch(*self.parse(action[1:-1]))
-            return
+        if "<" in action:
+            self.execute_action(target, [action])
         elif isinstance(action, list):
-            found = None
-            for act in action:
-                if act[0] == "<" and act[-1] == ">":
-                    # dirty, rewrite
-                    act = act[1:-1]
-                    verb, when, obj = act.split()
-                    which, value = when.split("=")
-                    if which == "at" and self.obj.name == value:
-                        found = [verb, obj, None]
-                        break
-            if found:
-                self.dispatch(*found)
-            else:
-                ln("That doesn't work.")
+            self.execute_action(target, action)
         else:
             ln(action)
-
 
     def dispatch(self, verb, obj, subj):
         funcs = {
@@ -224,6 +230,7 @@ def load(filename):
         obj.exits = data.get("exits", {})
         obj.objs = data.get("objects", [])
         obj.actions = data.get("actions", {})
+        obj.state = {k: str(v) for (k,v) in data.get("state", {}).items()}
         objs[obj.name] = obj
 
     # Resolve links
