@@ -79,7 +79,6 @@ class Game:
                 elif com == "set":
                     target.state[key] = value
                 elif com == "do":
-                    print("do action: %s" % action)
                     if action: ln(action)
                     action = ""
                     self.dispatch(key, value)
