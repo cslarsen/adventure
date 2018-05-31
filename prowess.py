@@ -14,6 +14,7 @@ ALIASES = {
     "describe": "look",
     "get": "take",
     "items": "inventory",
+    "pick": "take",
 }
 
 def w(*msg):
@@ -112,7 +113,7 @@ class Interpreter:
     def parse(self, cmd):
         cmd = cmd.replace("<", "").replace(">", "").replace(":", "")
         s = cmd.split()
-        for rem in ("the", "at", "to", "a", "on", "down", "under", "over"):
+        for rem in ("the", "at", "to", "a", "on", "down", "under", "over", "up"):
             if rem in s: s.remove(rem)
         for i in range(len(s)):
             s[i] = ALIASES.get(s[i], s[i])

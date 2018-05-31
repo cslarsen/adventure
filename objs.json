@@ -53,12 +53,14 @@
       "north": "cave"
     },
     "actions": {
-      "swim": "You'd rather not.",
+      "swim": "You'd rather not go for a swim.",
       "play": "You play in the sand.",
       "lay": "You lay down in the hot sand.",
-      "relax": "<do lay here>"
+      "relax": "<do lay here>",
+      "bathe": "<do swim here>",
+      "jump": "<do swim here>"
     },
-    "hidden": ["sand", "waves", "sea", "ship", "horizon"]
+    "hidden": ["sand", "waves", "sea", "ship", "horizon", "trawler"]
   },
 
   {
@@ -74,6 +76,11 @@
   {
     "name": "ship",
     "about": "It's hard to make out the ship clearly. It seems to be a trawler"
+  },
+
+  {
+    "name": "trawler",
+    "about": "Yep, that's definitely a trawler on the horizon."
   },
 
   {
@@ -135,11 +142,17 @@
 
   {
     "name": "field",
-    "about": "an open, grassy field",
+    "about": "an open, grassy field on a hill. You see a ship on the horizon",
+    "hidden": ["grass", "ship", "horizon", "trawler"],
     "objects": ["tower"],
     "exits": {
       "south": "garden"
     }
+  },
+
+  {
+    "name": "grass",
+    "about": "The grass is green."
   },
 
   {
@@ -155,7 +168,8 @@
       ],
       "climb": "There's no way you can climb it.",
       "use": "<do enter tower>",
-      "open": "<do enter tower>"
+      "open": "<do enter tower>",
+      "ascend": "<do enter tower>"
     }
   },
 
