@@ -55,7 +55,6 @@ class Game:
         def get_commands(action):
             commands = []
             for tag in re.findall("(<[^>]*>)", action):
-                target = obj
                 action = action.replace(tag, "")
                 cmd, key, value = tag[1:-1].split()
                 commands.append((cmd, key, value))
