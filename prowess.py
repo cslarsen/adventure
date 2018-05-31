@@ -1,6 +1,9 @@
+import base64
 import json
+import os
 import re
 import sys
+import zlib
 
 try:
     import gnureadline
@@ -30,6 +33,16 @@ def many(objs, art=a, sep="and"):
 class Object:
     def __init__(self, name):
         self.name = name
+
+def comp(data):
+    return base64.b85encode(zlib.compress(data.encode("utf-8")))
+
+def decomp(data):
+    return zlib.decompress(base64.b85decode(data)).decode("utf-8")
+
+def read(name):
+    with open(os.path.join(os.path.dirname(__file__), name), "rt"):
+        return decomp(f.read())
 
 class Interpreter:
     def __init__(self, obj, inv, allobjs):
