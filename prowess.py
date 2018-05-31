@@ -102,7 +102,7 @@ class Interpreter:
     def parse(self, cmd):
         cmd = cmd.replace("<", "").replace(">", "").replace(":", "")
         s = cmd.split()
-        for rem in ("the", "to", "a", "on", "down", "under", "over"):
+        for rem in ("the", "at", "to", "a", "on", "down", "under", "over"):
             if rem in s: s.remove(rem)
         while len(s) < 2:
             s += [None]
