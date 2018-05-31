@@ -52,29 +52,40 @@ class Game:
         return input("> ").strip()
 
     def execute_action(self, obj, actions):
-        for action in actions:
-            skip = False
+        def get_commands(action):
+            commands = []
             for tag in re.findall("(<[^>]*>)", action):
+                target = obj
                 action = action.replace(tag, "")
                 cmd, key, value = tag[1:-1].split()
+                commands.append((cmd, key, value))
+            return action, commands
 
+        if isinstance(actions, list):
+            for action in actions:
+                self.execute_action(obj, action)
+        else:
+            action, commands = get_commands(actions)
+            for com, key, value in commands:
+                target = obj
                 if "." in key:
-                    target, key = key.split(".")
-                    target = self.allobjs[target]
-                else:
-                    target = obj
+                    name, key = key.split(".")
+                    target = self.allobjs[name]
 
-                if cmd == "on" and target.state.get(key, None) != value:
-                    skip = True
-                    break
-                elif cmd == "set":
+                if com == "on" and key == "has" and value not in target.objs:
+                    return # skip action
+                elif com == "on" and key != "has" and target.state.get(key, "") != value:
+                    return # skip action
+                elif com == "set":
                     target.state[key] = value
-                elif cmd == "do":
-                    self.dispatch(key, value, None)
-                    skip = True
-
-            if not skip:
+                elif com == "do":
+                    print("do action: %s" % action)
+                    if action: ln(action)
+                    action = ""
+                    self.dispatch(key, value)
+            if action:
                 ln(action)
+        return
 
     def parse(self, cmd):
         cmd = cmd.replace("<", "").replace(">", "").replace(":", "")
@@ -82,7 +93,7 @@ class Game:
         for rem in ("the", "to", "a", "on"):
             if rem in s:
                 s.remove(rem)
-        while len(s) < 3:
+        while len(s) < 2:
             s += [None]
         return s
 
@@ -173,7 +184,7 @@ class Game:
             ln("You don't have %s." % a(obj))
 
     def action(self, verb, obj):
-        nope = "You either can't or won't  %s the %s." % (verb, obj)
+        nope = "You either can't or won't %s the %s." % (verb, obj)
         if obj in self.inv: # actions on inventory objects
             target = self.inv[obj]
             action = target.actions.get(verb, nope)
@@ -201,7 +212,7 @@ class Game:
         else:
             ln(action)
 
-    def dispatch(self, verb, obj, subj):
+    def dispatch(self, verb, obj, *rest):
         funcs = {
             ":jump": self.jump,
             "d": self.drop,
@@ -262,9 +273,7 @@ def load(filename):
 
 def run():
     try:
-        ln("Welcome to adventure.")
-        ln("Typical commands are: (l)ook, (g)o, (t)ake, (d)rop and (u)se.")
-        ln("Type (q)uit to exit.")
+        ln("Welcome! Commands are: (l)ook, (g)o, (t)ake, (d)rop, (q)uit and more.")
         ln("")
         game = Game(*load("objs.json"))
         game.run()

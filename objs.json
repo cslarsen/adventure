@@ -17,7 +17,7 @@
 
   {
     "name": "tree",
-    "about": "a very tall, lovely, Japanese plum blossom tree",
+    "about": "It's a lovely and very tall Japanese plum blossom tree",
     "actions": {
       "hug": "You give the tree a long hug.",
       "climb": "You can't climb it."
@@ -81,7 +81,7 @@
   {
     "name": "field",
     "about": "an open, grassy field",
-    "objects": ["tower", "clue"],
+    "objects": ["tower"],
     "exits": {
       "south": "garden"
     }
@@ -95,9 +95,10 @@
     },
     "actions": {
       "enter": [
-        "<on readclue 1><do :jump office>",
-        "<on readclue 0>You don't have a clue how to enter the tower."
-      ]
+        "<on readclue 1>You enter the tower...<do :jump office>",
+        "<on readclue 0>You don't have a clue on how to enter the tower."
+      ],
+      "climb": "There's no way you can climb it."
     }
   },
 
@@ -111,8 +112,14 @@
     "name": "computer",
     "about": "It's a bona-fide Commodore 64 home computer",
     "actions": {
-      "boot": "It doesn't work.",
-      "turn": "<do boot computer>"
+      "boot": [
+        "<on inventory.has tree>You start the computer and get back to work.. Congratulations, you have completed the game!<do quit game>",
+        "It's stuck while recursing a tree structure. Something is missing."
+      ],
+      "turn": "<do boot computer>",
+      "reset": "<do boot computer>",
+      "play": "<do boot computer>",
+      "use": "<do boot computer>"
     }
   }
 
