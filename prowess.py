@@ -184,11 +184,17 @@ class Interpreter:
                 ln("Right, you can't pocket an abstract term like %r." % obj)
             elif obj in self.inv:
                 ln("You already have the %s." % obj)
-            else:
+            elif obj:
                 ln("I see no %s here." % obj)
+            else:
+                ln("What do you want to take? %s?" % many(self.objs,
+                    art=lambda x: "the %s" % x, sep="or").capitalize())
 
-    def drop(self, obj):
-        if obj in self.inv:
+    def drop(self, obj=None):
+        if not obj:
+            ln("What do you want to drop? %s?" % many(self.inv, art=lambda x:
+                "the %s" % x, sep="or").capitalize())
+        elif obj in self.inv:
             self.objs[obj] = self.inv.pop(obj)
             ln("You drop the %s." % obj)
         else:
@@ -233,6 +239,7 @@ class Interpreter:
             "go": self.go,
             "i": self.inventory,
             "inventory": self.inventory,
+            "items": self.inventory,
             "l": self.look,
             "look": self.look,
             "ls": self.look,
