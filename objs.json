@@ -4,10 +4,14 @@
     "about": "You are standing in a sunny, Japanese garden",
     "objects": ["tree"],
     "exits": {
-      "east": "beach"
+      "east": "beach",
+      "north": "field"
     },
     "actions": {
-      "relax": "You lie down on the grass. Feels great!"
+      "relax": "You lay down on the grass. Feels great!",
+      "lay": "<do relax .>",
+      "sleep": "You're not sleepy.",
+      "help": "Nobody is around to help you."
     }
   },
 
@@ -15,15 +19,8 @@
     "name": "tree",
     "about": "a very tall, lovely, Japanese plum blossom tree",
     "actions": {
-      "hug": "You give the tree a long hug."
-    }
-  },
-
-  {
-    "name": "apple",
-    "about": "It's an apple. It's red.",
-    "actions": {
-      "eat": "You'd rather not. It looks weird."
+      "hug": "You give the tree a long hug.",
+      "climb": "You can't climb it."
     }
   },
 
@@ -46,7 +43,7 @@
     "about": "It's a book on AI programming in Python, written by a bot",
     "actions": {
       "read": [
-        "<on read 1>You already read it.",
+        "<on read 1>You already read it, and you're not going to read it again!",
         "<on read 0><set read 1>As you read the Python manual your mind starts to drift. You see a vision of 100-foot robots fighting, smashing down buildings as they grapple. Your vision fades."
       ],
       "use": "<do read manual>",
@@ -77,7 +74,27 @@
     "name": "clue",
     "about": "It's a little clue written on a yellow post-it note",
     "actions": {
-      "read": "It says: \"You have a very big pocket.\""
+      "read": "<set tower.hasclue 1>It says: \"You have a very big pocket.\""
+    }
+  },
+
+  {
+    "name": "field",
+    "about": "an open, grassy field",
+    "objects": ["tower"]
+  },
+
+  {
+    "name": "tower",
+    "about": "It's a big, white stone tower",
+    "state": {
+      "hasclue": 0
+    },
+    "actions": {
+      "enter": [
+        "<on hasclue 0>You don't have a clue how to enter the tower.",
+        "<on hasclue 1><do go platform>"
+      ]
     }
   }
 

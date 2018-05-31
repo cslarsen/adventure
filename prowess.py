@@ -127,6 +127,9 @@ class Game:
             dest = self.exits[obj]
         elif obj in (o.name for o in self.exits.values()):
             dest = [o for o in self.exits.values() if o.name == obj][0]
+        elif not self.exits:
+            ln("There is nowhere to go. You are trapped.")
+            return
         else:
             ln("You can only go %s." % many(self.exits.keys(), art=lambda x: x,
                 sep="or"))
