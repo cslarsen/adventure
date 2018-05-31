@@ -52,7 +52,8 @@
       "use": "<do read manual>",
       "hug": "You hug the book.",
       "caress": "You caress the book.",
-      "kiss": "You kiss the book."
+      "kiss": "You kiss the book.",
+      "throw": "<do drop manual>"
     },
     "state": {
       "read": 0
